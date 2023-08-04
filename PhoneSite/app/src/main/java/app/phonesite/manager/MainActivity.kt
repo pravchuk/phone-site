@@ -4,9 +4,12 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
@@ -25,6 +28,9 @@ class MainActivity : AppCompatActivity() {
     private var serverUp = false
     private lateinit var serverButton: Button
     private lateinit var serverTextView: TextView
+    private lateinit var editText: EditText
+    private lateinit var editButton: Button
+    private lateinit var editContainer: FrameLayout
 
 
     private val handler = Handler(Looper.getMainLooper())
@@ -49,6 +55,83 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+//        editText = findViewById(R.id.editText)
+//        val updateButton = findViewById<Button>(R.id.editButton)
+//
+//        // Update the string variable when the button is clicked
+//        updateButton.setOnClickListener {
+//            editText.setText(TECH_VERSE_LANDING_PAGE)
+//            val newString = editText.text.toString()
+//            if (newString.isNotBlank()) {
+//                TECH_VERSE_LANDING_PAGE = newString
+//                Toast.makeText(this, "String updated!", Toast.LENGTH_SHORT).show()
+//            } else {
+//                Toast.makeText(this, "Please enter a valid string.", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
+        editButton = findViewById(R.id.editButton)
+        editContainer = findViewById(R.id.editContainer)
+
+        // Show/hide the EditText and buttons based on user actions
+        editButton.setOnClickListener {
+            if (editContainer.childCount == 0) {
+                showEditView()
+            } else {
+                hideEditView()
+            }
+        }
+
+    }
+
+    private fun showEditView() {
+//        val inflater = LayoutInflater.from(this)
+//        val editView = inflater.inflate(R.layout.edit_text_layout, null)
+//
+//        val editText = editView.findViewById<EditText>(R.id.editText)
+//        val saveButton = editView.findViewById<Button>(R.id.saveButton)
+//
+//        editText.setText(TECH_VERSE_LANDING_PAGE)
+//
+//        saveButton.setOnClickListener {
+//            TECH_VERSE_LANDING_PAGE = editText.text.toString()
+//            hideEditView()
+//            Toast.makeText(this, "String updated!", Toast.LENGTH_SHORT).show()
+//        }
+//
+//        editContainer.addView(editView)
+//        editButton.text = "Cancel"
+
+        val dialogView = layoutInflater.inflate(R.layout.edit_text_layout, null)
+        val websiteEditText = dialogView.findViewById<EditText>(R.id.editText)
+        val submitButton = dialogView.findViewById<Button>(R.id.saveButton)
+
+        // Set the default text in the EditText (if needed)
+        websiteEditText.setText(TECH_VERSE_LANDING_PAGE)
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Edit website")
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        submitButton.setOnClickListener {
+            val websiteContent = websiteEditText.text.toString().trim()
+            if (websiteContent.isNotEmpty()) {
+                TECH_VERSE_LANDING_PAGE = websiteContent;
+            Toast.makeText(this, "Website updated!", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            } else {
+                websiteEditText.error = "Website HTML cannot be empty."
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun hideEditView() {
+        editContainer.removeAllViews()
+        editButton.text = "Edit"
     }
 
     private fun showWebsiteInputDialog(port: Int) {
@@ -174,7 +257,7 @@ class MainActivity : AppCompatActivity() {
             // Get request method
             when (exchange!!.requestMethod) {
                 "GET" -> {
-                    sendResponse(exchange, BAKERY_HTML)
+                    sendResponse(exchange, TECH_VERSE_LANDING_PAGE)
                 }
 
             }
